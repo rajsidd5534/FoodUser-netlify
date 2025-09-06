@@ -9,7 +9,7 @@ const MyOrders = () => {
    const [data , setData] = useState([]);
 
    const fetchOrders = async () => {
-  const response =  await axios.get("http://localhost:8082/api/orders", {headers: {Authorization: `Bearer ${token}`}});
+  const response =  await axios.get("https://fooapi-backend-production.up.railway.app/api/orders", {headers: {Authorization: `Bearer ${token}`}});
   setData(response.data);
    };
 

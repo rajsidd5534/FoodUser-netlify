@@ -13,7 +13,7 @@ export const StoreContextProvider = (props) => {
     const increaseQty = async (foodId) => {
       setQuantities((prev) => ({...prev, [foodId]: (prev[foodId] || 0) + 1 }));
         await axios.post(
-      "http://localhost:8082/api/cart",
+      "https://fooapi-backend-production.up.railway.app/api/cart",
         {foodId},
         {headers: { Authorization: `Bearer ${token}` }});
     }
@@ -21,7 +21,7 @@ export const StoreContextProvider = (props) => {
     const decreaseQty = async (foodId) => {
         setQuantities((prev) => ({...prev, [foodId]: prev[foodId] > 0 ? prev[foodId] - 1 : 0 }));
          axios.post(
-           "http://localhost:8082/api/cart/remove",
+           "https://fooapi-backend-production.up.railway.app/api/cart/remove",
             {foodId},
             {headers: { Authorization: `Bearer ${token}` }});
     }
@@ -35,7 +35,7 @@ export const StoreContextProvider = (props) => {
     };
 
     const loadCartData = async (token) => {
-     const response = await  axios.get('http://localhost:8082/api/cart',{headers: { Authorization: `Bearer ${token}` }});
+     const response = await  axios.get('https://fooapi-backend-production.up.railway.app/api/cart',{headers: { Authorization: `Bearer ${token}` }});
      setQuantities(response.data.items);
     };
 
