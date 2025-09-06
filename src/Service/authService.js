@@ -4,22 +4,19 @@ const API_URL = "https://fooapi-backend-production.up.railway.app/api";
 
 export const registerUser = async (data) => {
     try {
-       const response = await axios.post(
-        API_URL + "/register",
-        data
-       ); 
-       return response;
+        const response = await axios.post(
+            API_URL+"/register",
+            data
+          );
+        return response
     } catch (error) {
         throw error;
     }
 }
 
-export const loginUser = async (data) => {
+export const login = async (data) => {
     try {
-        const response = await axios.post(
-            API_URL + "/login",
-            data
-        );
+        const response = await axios.post(API_URL+"/login", data);
         return response;
     } catch (error) {
         throw error;

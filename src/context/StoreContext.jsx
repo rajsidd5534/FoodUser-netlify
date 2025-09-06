@@ -1,11 +1,10 @@
 import { createContext, useEffect, useState } from "react";
-import { fetchFoodList } from "../Service/FoodService";
-import axios from "axios";
 import {
   addToCart,
   getCartData,
   removeQtyFromCart,
 } from "../Service/cartService";
+import { fetchFoodList } from "../Service/FoodService";
 
 export const StoreContext = createContext(null);
 
