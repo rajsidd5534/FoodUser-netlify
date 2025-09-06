@@ -51,7 +51,7 @@ const PlaceOrder = () => {
       orderStatus: "Preparing",
     };
     try {
-    const response = await axios.post("http://localhost:8082/api/orders/create", orderData , {
+    const response = await axios.post("https://fooapi-backend-production.up.railway.app/api/orders/create", orderData , {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +104,7 @@ const PlaceOrder = () => {
       razorpay_signature: razorpayResponse.razorpay_signature
     };
    try {
-     const response = await axios.post("http://localhost:8082/api/orders/verify", paymentData, {
+     const response = await axios.post("https://fooapi-backend-production.up.railway.app/api/orders/verify", paymentData, {
       headers: {
         Authorization: `Bearer ${token}`}});
     if (response.status === 200) {
@@ -123,7 +123,7 @@ const PlaceOrder = () => {
 
   const deleteOrder = async (orderId) => {
     try {
-      await axios.delete("http://localhost:8082/api/orders/" + orderId, {
+      await axios.delete("https://fooapi-backend-production.up.railway.app/api/orders/" + orderId, {
         headers: {
           Authorization: `Bearer ${token}`}});
     } catch (error) {
@@ -133,7 +133,7 @@ const PlaceOrder = () => {
 
   const clearCart = async () => {
     try {
-      await axios.delete("http://localhost:8082/api/cart", {
+      await axios.delete("https://fooapi-backend-production.up.railway.app/api/cart", {
         headers: {
           Authorization: `Bearer ${token}`}});
       setQuantities({});
