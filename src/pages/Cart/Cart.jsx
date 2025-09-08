@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { StoreContext } from "../../context/StoreContext";
-import { calculateCartTotals } from "../../util/cartUtil";
+import { calculateCartTotals } from "../../utils/cartUtil";
 import "./Cart.css";
 
 

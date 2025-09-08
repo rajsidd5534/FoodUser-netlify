@@ -3,13 +3,14 @@ import { useContext, useEffect, useState } from 'react';
 import { assets } from '../../assets/assets';
 import { StoreContext } from '../../context/StoreContext';
 import './MyOrders.css';
+import { fetchUserOrders } from '../../Service/orderService';
 
 const MyOrders = () => {
    const {token} = useContext(StoreContext);
    const [data , setData] = useState([]);
 
    const fetchOrders = async () => {
-  const response =  await axios.get("https://fooapi-backend-production.up.railway.app/api/orders", {headers: {Authorization: `Bearer ${token}`}});
+  const response =  await fetchUserOrders(token);
   setData(response.data);
    };
 
