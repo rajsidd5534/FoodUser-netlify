@@ -1,8 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser } from "../../Service/authService";
-import "./Register.css";
 
 const Register = () => {
   const navigate = useNavigate();
