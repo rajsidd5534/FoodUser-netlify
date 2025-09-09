@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import "./Cart.css";
 import { Link, useNavigate } from "react-router-dom";
-import { calculateCartTotals } from "../../util/cartUtils";
+import { calculateCartTotals } from "../../utils/cartUtil";
 
 const Cart = () => {
   const navigate = useNavigate();
