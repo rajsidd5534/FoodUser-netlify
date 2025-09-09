@@ -4,7 +4,7 @@ import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import { calculateCartTotals } from "../../utils/cartUtil";
 import { toast } from "react-toastify";
-import { RAZORPAY_KEY } from "../../util/contants";
+import { RAZORPAY_KEY } from "../../util/constants";
 import { useNavigate } from "react-router-dom";
 import {
   createOrder,
