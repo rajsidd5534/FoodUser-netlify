@@ -1,9 +1,9 @@
 import biryani from './biryani.png';
 import burgur from './burgur.png';
-import cakes from './cakes.png';
+import cake from './cake.png';
 import cart from './cart.png';
 import delivery from './delivery.png';
-import icecream from './icecream.png';
+import iceCream from './iceCream.png';
 import logo from './logo.png';
 import pizza from './pizza.png';
 import profile from './profile.png';
@@ -32,7 +32,7 @@ export const categories = [
 
     {
         category: 'Cake',
-        icon: cakes
+        icon: cake
     },
 
     {
@@ -42,7 +42,7 @@ export const categories = [
 
     {
         category: 'Ice Cream',
-        icon: icecream
+        icon: iceCream
     },
 
     {
