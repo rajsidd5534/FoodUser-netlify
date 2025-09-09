@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = "http://localhost:8080/api/cart";
+const API_URL = "https://fooapi-backend.onrender.com/api/cart";
 
 export const addToCart = async (foodId, token) => {
     try {
