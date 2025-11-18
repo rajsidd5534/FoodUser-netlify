@@ -16,9 +16,10 @@ import { clearCartItems } from "../../Service/cartService";
 const PlaceOrder = () => {
   const { foodList, quantities, setQuantities, token } =
     useContext(StoreContext);
+
   const navigate = useNavigate();
 
-  // Safe cartItems (avoid null crash)
+  // Safe cartItems
   const cartItems = Array.isArray(foodList)
     ? foodList.filter((food) => quantities?.[food.id] > 0)
     : [];
@@ -35,9 +36,8 @@ const PlaceOrder = () => {
   });
 
   const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setData((data) => ({ ...data, [name]: value }));
+    const { name, value } = event.target;
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const onSubmitHandler = async (event) => {
@@ -53,6 +53,7 @@ const PlaceOrder = () => {
       return;
     }
 
+    // Build order
     const orderData = {
       userAddress: `${data.firstName} ${data.lastName}, ${data.address}, ${data.city}, ${data.state}, ${data.zip}`,
       phoneNumber: data.phoneNumber,
@@ -72,13 +73,14 @@ const PlaceOrder = () => {
 
     try {
       const response = await createOrder(orderData, token);
+
       if (response?.razorpayOrderId) {
         initiateRazorpayPayment(response);
       } else {
-        toast.error("Unable to place order. Please try again.");
+        toast.error("Unable to place order. Try again.");
       }
     } catch (error) {
-      toast.error("Unable to place order. Please try again.");
+      toast.error("Order error. Try again.");
     }
   };
 
@@ -87,8 +89,8 @@ const PlaceOrder = () => {
       key: RAZORPAY_KEY,
       amount: order.amount,
       currency: "INR",
-      name: "Food Land",
-      description: "Food order payment",
+      name: "Foodies",
+      description: "Order Payment",
       order_id: order.razorpayOrderId,
       handler: verifyPaymentHandler,
       prefill: {
@@ -98,11 +100,12 @@ const PlaceOrder = () => {
       },
       theme: { color: "#3399cc" },
       modal: {
-        ondismiss: deleteOrderHandler,
+        ondismiss: () => deleteOrderHandler(order.orderId),
       },
     };
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
+
+    const razor = new window.Razorpay(options);
+    razor.open();
   };
 
   const verifyPaymentHandler = async (razorpayResponse) => {
@@ -114,22 +117,23 @@ const PlaceOrder = () => {
 
     try {
       const success = await verifyPayment(paymentData, token);
-      if (success) {
-        toast.success("Payment successful.");
 
-        // Navigate before clearing cart to prevent crash
+      if (success) {
+        toast.success("Payment successful!");
+
+        // Navigate first to avoid re-render crash
         navigate("/myorders");
 
-        // Clear cart AFTER redirect
+        // Clear cart after redirect
         setTimeout(async () => {
           await clearCartItems(token, setQuantities);
-        }, 1000);
+        }, 500);
       } else {
-        toast.error("Payment failed.");
+        toast.error("Payment verification failed.");
         navigate("/");
       }
     } catch (error) {
-      toast.error("Payment failed. Try again.");
+      toast.error("Payment error.");
       navigate("/");
     }
   };
@@ -137,14 +141,15 @@ const PlaceOrder = () => {
   const deleteOrderHandler = async (orderId) => {
     try {
       await deleteOrder(orderId, token);
-    } catch (error) {
-      toast.error("Something went wrong. Contact support.");
+    } catch {
+      toast.error("Order cancelled.");
     }
   };
 
-  // Calculate totals safely
-  const { subtotal, shipping, tax, total } =
-    calculateCartTotals(cartItems, quantities);
+  const { subtotal, shipping, tax, total } = calculateCartTotals(
+    cartItems,
+    quantities
+  );
 
   return (
     <div className="container mt-4">
@@ -160,7 +165,7 @@ const PlaceOrder = () => {
         </div>
 
         <div className="row g-5">
-          {/* RIGHT CART SECTION */}
+          {/* CART */}
           <div className="col-md-5 col-lg-4 order-md-last">
             <h4 className="d-flex justify-content-between align-items-center mb-3">
               <span className="text-primary">Your cart</span>
@@ -170,10 +175,6 @@ const PlaceOrder = () => {
             </h4>
 
             <ul className="list-group mb-3">
-              {cartItems.length === 0 && (
-                <li className="list-group-item text-center">Cart is empty</li>
-              )}
-
               {cartItems.map((item) => (
                 <li
                   key={item.id}
@@ -208,11 +209,121 @@ const PlaceOrder = () => {
             </ul>
           </div>
 
-          {/* LEFT BILLING SECTION */}
+          {/* BILLING FORM */}
           <div className="col-md-7 col-lg-8">
             <h4 className="mb-3">Billing address</h4>
-            <form className="needs-validation" onSubmit={onSubmitHandler}>
-              {/* your form fields remain unchanged */}
+
+            <form onSubmit={onSubmitHandler}>
+              <div className="row g-3">
+                <div className="col-sm-6">
+                  <label className="form-label">First name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="firstName"
+                    required
+                    value={data.firstName}
+                    onChange={onChangeHandler}
+                  />
+                </div>
+
+                <div className="col-sm-6">
+                  <label className="form-label">Last name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="lastName"
+                    required
+                    value={data.lastName}
+                    onChange={onChangeHandler}
+                  />
+                </div>
+
+                <div className="col-12">
+                  <label className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="email"
+                    required
+                    value={data.email}
+                    onChange={onChangeHandler}
+                  />
+                </div>
+
+                <div className="col-12">
+                  <label className="form-label">Phone Number</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="phoneNumber"
+                    required
+                    value={data.phoneNumber}
+                    onChange={onChangeHandler}
+                  />
+                </div>
+
+                <div className="col-12">
+                  <label className="form-label">Address</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="address"
+                    required
+                    value={data.address}
+                    onChange={onChangeHandler}
+                  />
+                </div>
+
+                <div className="col-md-5">
+                  <label className="form-label">State</label>
+                  <select
+                    className="form-select"
+                    name="state"
+                    required
+                    value={data.state}
+                    onChange={onChangeHandler}
+                  >
+                    <option value="">Choose...</option>
+                    <option>Karnataka</option>
+                  </select>
+                </div>
+
+                <div className="col-md-4">
+                  <label className="form-label">City</label>
+                  <select
+                    className="form-select"
+                    name="city"
+                    required
+                    value={data.city}
+                    onChange={onChangeHandler}
+                  >
+                    <option value="">Choose...</option>
+                    <option>Bangalore</option>
+                  </select>
+                </div>
+
+                <div className="col-md-3">
+                  <label className="form-label">Zip</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="zip"
+                    required
+                    value={data.zip}
+                    onChange={onChangeHandler}
+                  />
+                </div>
+              </div>
+
+              <hr className="my-4" />
+
+              <button
+                className="w-100 btn btn-primary btn-lg"
+                type="submit"
+              >
+                Continue to checkout
+              </button>
             </form>
           </div>
         </div>
