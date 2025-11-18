@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
 import { assets } from "../../assets/assets";
 import "./MyOrders.css";
 import { fetchUserOrders } from "../../Service/orderService";
@@ -9,10 +7,20 @@ import { fetchUserOrders } from "../../Service/orderService";
 const MyOrders = () => {
   const { token } = useContext(StoreContext);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchOrders = async () => {
-    const response = await fetchUserOrders(token);
-    setData(response);
+    try {
+      const response = await fetchUserOrders(token);
+
+      // ALWAYS ensure it's an array
+      setData(Array.isArray(response) ? response : []);
+    } catch (error) {
+      console.error("Error loading orders:", error);
+      setData([]); // prevent crash
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -21,6 +29,22 @@ const MyOrders = () => {
     }
   }, [token]);
 
+  if (loading) {
+    return (
+      <div className="container text-center mt-5">
+        <h5>Loading your orders...</h5>
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className="container text-center mt-5">
+        <h5>No orders found.</h5>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       <div className="py-5 row justify-content-center">
@@ -28,6 +52,10 @@ const MyOrders = () => {
           <table className="table table-responsive">
             <tbody>
               {data.map((order, index) => {
+                const items = Array.isArray(order.orderedItems)
+                  ? order.orderedItems
+                  : [];
+
                 return (
                   <tr key={index}>
                     <td>
@@ -38,20 +66,27 @@ const MyOrders = () => {
                         width={48}
                       />
                     </td>
+
                     <td>
-                      {order.orderedItems.map((item, index) => {
-                        if (index === order.orderedItems.length - 1) {
-                          return item.name + " x " + item.quantity;
-                        } else {
-                          return item.name + " x " + item.quantity + ", ";
-                        }
-                      })}
+                      {items.length > 0
+                        ? items
+                            .map((item) => `${item.name} x ${item.quantity}`)
+                            .join(", ")
+                        : "No items"}
                     </td>
-                    <td>&#x20B9;{order.amount.toFixed(2)}</td>
-                    <td>Items: {order.orderedItems.length}</td>
+
+                    <td>
+                      ₹{order?.amount
+                        ? Number(order.amount).toFixed(2)
+                        : "0.00"}
+                    </td>
+
+                    <td>Items: {items.length}</td>
+
                     <td className="fw-bold text-capitalize">
-                      &#x25cf;{order.orderStatus}
+                      ● {order.orderStatus || "Pending"}
                     </td>
+
                     <td>
                       <button
                         className="btn btn-sm btn-warning"
