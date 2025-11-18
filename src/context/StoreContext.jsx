@@ -13,30 +13,51 @@ export const StoreContextProvider = (props) => {
   const [quantities, setQuantities] = useState({});
   const [token, setToken] = useState("");
 
+  // Increase quantity
   const increaseQty = async (foodId) => {
     setQuantities((prev) => ({ ...prev, [foodId]: (prev[foodId] || 0) + 1 }));
-    await addToCart(foodId, token);
+
+    if (token) {
+      await addToCart(foodId, token);
+    }
   };
 
+  // Decrease quantity
   const decreaseQty = async (foodId) => {
     setQuantities((prev) => ({
       ...prev,
       [foodId]: prev[foodId] > 0 ? prev[foodId] - 1 : 0,
     }));
-    await removeQtyFromCart(foodId, token);
+
+    if (token) {
+      await removeQtyFromCart(foodId, token);
+    }
   };
 
+  // Remove item completely
   const removeFromCart = (foodId) => {
     setQuantities((prevQuantities) => {
-      const updatedQuantitites = { ...prevQuantities };
-      delete updatedQuantitites[foodId];
-      return updatedQuantitites;
+      const updated = { ...prevQuantities };
+      delete updated[foodId];
+      return updated;
     });
   };
 
+  // Load cart safely (fixed)
   const loadCartData = async (token) => {
-    const items = await getCartData(token);
-    setQuantities(items);
+    try {
+      const items = await getCartData(token);
+
+      if (!items || typeof items !== "object") {
+        setQuantities({});
+        return;
+      }
+
+      setQuantities(items);
+    } catch (error) {
+      console.error("Error loading cart data:", error);
+      setQuantities({});
+    }
   };
 
   const contextValue = {
@@ -51,15 +72,20 @@ export const StoreContextProvider = (props) => {
     loadCartData,
   };
 
+  // Load food list + cart data on startup
   useEffect(() => {
     async function loadData() {
       const data = await fetchFoodList();
       setFoodList(data);
-      if (localStorage.getItem("token")) {
-        setToken(localStorage.getItem("token"));
-        await loadCartData(localStorage.getItem("token"));
+
+      const storedToken = localStorage.getItem("token");
+
+      if (storedToken) {
+        setToken(storedToken);
+        await loadCartData(storedToken);
       }
     }
+
     loadData();
   }, []);
 
