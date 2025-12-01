@@ -1,0 +1,50 @@
+/* Page layout */
+.foodai-page {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+}
+
+/* Wrapper for card + right text section */
+.foodai-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+/* Chatbot card container */
+.foodai-card {
+  flex: 1 1 700px;
+  max-width: 750px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* iframe responsive */
+.foodai-iframe {
+  width: 100%;
+  height: 650px;
+  max-height: 90vh;
+  border: none;
+  border-radius: 12px;
+}
+
+/* Right side info box */
+.foodai-info {
+  flex: 1 1 250px;
+  font-size: 15px;
+}
+
+/* Mobile styling */
+@media (max-width: 768px) {
+  .foodai-iframe {
+    height: 500px;
+    border-radius: 0;
+  }
+
+  .foodai-wrapper {
+    flex-direction: column;
+  }
+}
