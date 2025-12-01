@@ -12,6 +12,7 @@ import FoodDetails from './pages/FoodDetails/FoodDetails';
 import Home from './pages/Home/Home';
 import MyOrders from './pages/MyOrders/MyOrders';
 import PlaceOrder from './pages/PlaceOrder/PlaceOrder';
+import FoodAi from './pages/FoodAi';
 
 
 
@@ -30,7 +31,8 @@ const App = () => {
         <Route path='/order' element={token ? <PlaceOrder /> : <Login />} />
         <Route path='/login' element={token ? <Home /> : <Login />} />
         <Route path='/register' element={token ? <Home /> : <Register /> } />
-         <Route path='/myorders' element={token ? <MyOrders /> : <Login /> } />
+        <Route path='/myorders' element={token ? <MyOrders /> : <Login /> } />
+        <Route path="/food-ai" element={<FoodAi />} />
       </Routes>
     </div>
   )
